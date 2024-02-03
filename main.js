@@ -11,7 +11,7 @@ const name1 = {
 const name2 = {
     name: "ShangTsung",
     hp: 100,
-    img: "./assets/images/shang-mk3-stance.gif",
+    img: "./assets/images/liukang.gif",
     weapon: ["Straight Sword", "Ancient Scroll", "Soul Phylactery"],
     attack: function () {
         console.log(name + " Fight...")
