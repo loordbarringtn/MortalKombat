@@ -1,7 +1,7 @@
 const name1 = {
     name: "JohnnyCage",
-    hp: 190,
-    img: "./assets/images/johnny-cage-hd-sprite2-cancelled-project.gif",
+    hp: 100,
+    img: "./assets/images/kitana.gif",
     weapon: ["Brass Knuckles", "Bowie Knife", "Pistol","Nunchaku","$500 Sunglasses"],
     attack: function () {
         console.log(name + " Fight...")
@@ -10,7 +10,7 @@ const name1 = {
 
 const name2 = {
     name: "ShangTsung",
-    hp: 210,
+    hp: 100,
     img: "./assets/images/shang-mk3-stance.gif",
     weapon: ["Straight Sword", "Ancient Scroll", "Soul Phylactery"],
     attack: function () {
@@ -27,7 +27,8 @@ function createPlayer(className, objectName) {
     $life.classList.add("life");
     $life.style.width = `${objectName.hp}%`;
     const $name = document.createElement("div");
-    $name.classList.add(objectName.name);
+    $name.innerText = objectName.name;
+    $name.classList.add("name");
     $progressbar.appendChild($life);
     $progressbar.appendChild($name)
     const $character = document.createElement("div");
