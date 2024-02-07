@@ -2,7 +2,7 @@ const arenasElement= document.querySelector('.arenas');
 const randomButton = document.querySelector('.button');
 
 const player1 = {
-    player: 1,
+    id: 1,
     name: 'Kitana',
     hp: 100,
     img: './assets/images/kitana.gif',
@@ -13,7 +13,7 @@ const player1 = {
 };
 
 const player2 = {
-    player: 2,
+    id: 2,
     name: 'Liu Kang',
     hp: 100,
     img: './assets/images/liukang.gif',
@@ -32,17 +32,18 @@ function createElement(tag, className) {
 }
 
 function createPlayer(player) {
-    const playerElement = createElement('div', 'player'+player.player);
+    const playerElement = createElement('div', `player${player.id}`);
     const progressbarEl = createElement('div', 'progressbar');
     const lifeElement = createElement('div', 'life');
-    lifeElement.style.width = `${player.hp}%`;
     const nameElement = createElement('div', 'name');
+    const characterElement = document.createElement('div');
+    const imageElement= createElement('img');
+
+    lifeElement.style.width = `${player.hp}%`;
     nameElement.innerText = player.name;
     progressbarEl.appendChild(lifeElement);
     progressbarEl.appendChild(nameElement)
-    const characterElement = document.createElement('div');
     characterElement.classList.add('character');
-    const imageElement= createElement('img');
     imageElement.src = player.img;
     characterElement.appendChild(imageElement);
     playerElement.appendChild(progressbarEl);
@@ -53,31 +54,39 @@ function createPlayer(player) {
 arenasElement.appendChild(createPlayer(player1));
 arenasElement.appendChild(createPlayer(player2));
 
-function playerLoose(name) {
-    const  loseTitle = createElement('div', 'loseTitle');
-    loseTitle.innerText = name + ' lose';
-    return loseTitle;
-}
-
 function playerWin(name) {
     const  loseTitle = createElement('div', 'loseTitle');
-    loseTitle.innerText = name + ' wins!';
+    loseTitle.innerText = `${name} + wins!`;
     return loseTitle;
 }
 
 function changeHP(player) {
-    const playerLife = document.querySelector('.player'+player.player+' .life');
-    player.hp -= Math.ceil(Math.random()*20);
+    player.hp -= Math.ceil(Math.random() * 20);
+    const playerLife = document.querySelector(`.player${player.id} .life`);
     playerLife.style.width = player.hp + '%';
-    if (player.hp <= 0) {
-        const winPlayer = player.player === 1 ? player2 : player1;
-        arenasElement.appendChild(playerWin(winPlayer.name));
-        playerLife.style.width = 0+'%';
-        randomButton.disabled = true
+}
+
+function handleGameResult(player1, player2) {
+    let winner, loser;
+
+    if (player1.hp <= 0) {
+        winner = player2;
+        loser = player1;
+    } else if (player2.hp <= 0) {
+        winner = player1;
+        loser = player2;
+    }
+
+    if (loser) {
+        const looserLife = document.querySelector('.player' + loser.id + ' .life');
+        arenasElement.appendChild(playerWin(winner.name));
+        looserLife.style.width = 0 + '%';
+        randomButton.disabled = true;
     }
 }
 
 randomButton.addEventListener('click', function () {
     changeHP(player1);
     changeHP(player2);
-})
+    handleGameResult(player1, player2);
+});
