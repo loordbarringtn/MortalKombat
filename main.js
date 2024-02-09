@@ -7,9 +7,10 @@ const player1 = {
     hp: 100,
     img: './assets/images/kitana.gif',
     weapon: ['Steel Fans', 'Flying Blade', 'Bō','Triblade','Sai'],
-    attack: function () {
-        console.log(name + ' Fight...')
-    }
+    attack: attack,
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
 
 const player2 = {
@@ -18,10 +19,15 @@ const player2 = {
     hp: 100,
     img: './assets/images/liukang.gif',
     weapon: ['Dragon Sword', 'Nunchaku', 'Houan Chains'],
-    attack: function () {
-        console.log(name + ' Fight...')
-    }
+    attack: attack,
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
+
+function attack() {
+    console.log(this.name + ' Fight...');
+}
 
 function createElement(tag, className) {
     const tagElement =  document.createElement(tag);
@@ -54,39 +60,69 @@ function createPlayer(player) {
 arenasElement.appendChild(createPlayer(player1));
 arenasElement.appendChild(createPlayer(player2));
 
-function playerWin(name) {
+function showResultText(name) {
     const  loseTitle = createElement('div', 'loseTitle');
-    loseTitle.innerText = `${name} + wins!`;
+    if (name) {
+        loseTitle.innerText = `${name} + wins!`;
+    } else {
+        loseTitle.innerText = 'draw!';
+    }
     return loseTitle;
 }
 
-function changeHP(player) {
-    player.hp -= Math.ceil(Math.random() * 20);
-    const playerLife = document.querySelector(`.player${player.id} .life`);
-    playerLife.style.width = player.hp + '%';
+function getRandomValue(limit) {
+    return Math.ceil(Math.random() * limit);
 }
 
-function handleGameResult(player1, player2) {
-    let winner, loser;
+function renderHP() {
+    return this.elHP().style.width = this.hp + `%`;
+}
 
-    if (player1.hp <= 0) {
-        winner = player2;
-        loser = player1;
-    } else if (player2.hp <= 0) {
-        winner = player1;
-        loser = player2;
+function elHP() {
+    return document.querySelector(`.player${this.id} .life`);
+}
+
+function changeHP(damage) {
+    this.hp -= damage;
+
+    if (this.hp <=0) {
+        this.hp = 0;
+    }
+}
+
+function createReloadButton() {
+    const reloadWrap = createElement('div', 'reloadWrap');
+    const reloadButton = createElement('button', 'button');
+    reloadButton.innerText = 'Restart';
+    reloadWrap.appendChild(reloadButton);
+    return reloadWrap;
+}
+
+function handleGameResult() {
+    if (player1.hp === 0 || player2.hp === 0) {
+        randomButton.disabled = true;
+        const reloadButton = createReloadButton();
+
+        reloadButton.addEventListener('click', function () {
+            window.location.reload();
+        })
+
+        arenasElement.appendChild(reloadButton);
     }
 
-    if (loser) {
-        const looserLife = document.querySelector('.player' + loser.id + ' .life');
-        arenasElement.appendChild(playerWin(winner.name));
-        looserLife.style.width = 0 + '%';
-        randomButton.disabled = true;
+    if (player1.hp === 0 && player1.hp < player2.hp) {
+        arenasElement.appendChild(showResultText(player2.name));
+    } else if (player2.hp === 0 && player2.hp < player1.hp) {
+        arenasElement.appendChild(showResultText(player1.name));
+    } else if (player1.hp === 0 && player2.hp === 0) {
+        arenasElement.appendChild(showResultText());
     }
 }
 
 randomButton.addEventListener('click', function () {
-    changeHP(player1);
-    changeHP(player2);
-    handleGameResult(player1, player2);
+    player1.changeHP(getRandomValue(20));
+    player2.changeHP(getRandomValue(20));
+    player1.renderHP();
+    player2.renderHP();
+    handleGameResult();
 });
