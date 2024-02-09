@@ -7,7 +7,10 @@ const player1 = {
     hp: 100,
     img: './assets/images/kitana.gif',
     weapon: ['Steel Fans', 'Flying Blade', 'Bō','Triblade','Sai'],
-    attack: attack
+    attack: attack,
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
 
 const player2 = {
@@ -16,7 +19,10 @@ const player2 = {
     hp: 100,
     img: './assets/images/liukang.gif',
     weapon: ['Dragon Sword', 'Nunchaku', 'Houan Chains'],
-    attack: attack
+    attack: attack,
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
 
 function attack() {
@@ -68,18 +74,40 @@ function getRandomValue(limit) {
     return Math.ceil(Math.random() * limit);
 }
 
-function changeHP(player) {
-    player.hp -= getRandomValue(20);
-    const playerLife = document.querySelector(`.player${player.id} .life`);
-    if (player.hp <=0) {
-        player.hp = 0;
+function renderHP() {
+    return this.elHP().style.width = this.hp + `%`;
+}
+
+function elHP() {
+    return document.querySelector(`.player${this.id} .life`);
+}
+
+function changeHP(damage) {
+    this.hp -= damage;
+
+    if (this.hp <=0) {
+        this.hp = 0;
     }
-    playerLife.style.width = player.hp + '%';
+}
+
+function createReloadButton() {
+    const reloadWrap = createElement('div', 'reloadWrap');
+    const reloadButton = createElement('button', 'button');
+    reloadButton.innerText = 'Restart';
+    reloadWrap.appendChild(reloadButton);
+    return reloadWrap;
 }
 
 function handleGameResult() {
     if (player1.hp === 0 || player2.hp === 0) {
         randomButton.disabled = true;
+        const reloadButton = createReloadButton();
+
+        reloadButton.addEventListener('click', function () {
+            window.location.reload();
+        })
+
+        arenasElement.appendChild(reloadButton);
     }
 
     if (player1.hp === 0 && player1.hp < player2.hp) {
@@ -92,7 +120,9 @@ function handleGameResult() {
 }
 
 randomButton.addEventListener('click', function () {
-    changeHP(player1);
-    changeHP(player2);
+    player1.changeHP(getRandomValue(20));
+    player2.changeHP(getRandomValue(20));
+    player1.renderHP();
+    player2.renderHP();
     handleGameResult();
 });
